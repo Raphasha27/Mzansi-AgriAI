@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mzansi AgriAI — AI Advisory for South African Farmers</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--green:#2e7d32;--green-light:#4caf50;--green-dark:#1b5e20;--earth:#6d4c41;--earth-light:#8d6e63;--cream:#f1f8e9;--cream-dark:#e8f5e9;--text:#1a1a1a;--text-light:#555;--white:#fff;--shadow:0 2px 12px rgba(0,0,0,.1);--radius:8px;--font:'Segoe UI',system-ui,-apple-system,sans-serif}
+body{font-family:var(--font);background:var(--cream);color:var(--text);line-height:1.6;min-height:100vh}
+.container{max-width:1100px;margin:0 auto;padding:0 16px}
+.hero{background:linear-gradient(135deg,var(--green-dark),var(--green),var(--green-light));color:var(--white);padding:60px 0 48px;text-align:center;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat}
+.hero h1{font-size:clamp(1.6rem,5vw,2.6rem);font-weight:800;margin-bottom:8px;position:relative;z-index:1}
+.hero p{font-size:clamp(.95rem,2.5vw,1.2rem);opacity:.9;position:relative;z-index:1}
+.section{padding:40px 0}
+.section-title{font-size:1.4rem;font-weight:700;color:var(--green-dark);margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-bottom:16px;transition:transform .2s}
+.card:hover{transform:translateY(-2px)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.province-card{background:var(--green-dark);color:var(--white);border-radius:var(--radius);padding:16px;text-align:center;font-weight:600;font-size:.95rem}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-weight:600;font-size:.9rem;color:var(--text-light);margin-bottom:4px}
+.form-group select,.form-group input{width:100%;padding:10px 12px;border:2px solid #ddd;border-radius:var(--radius);font-size:1rem;font-family:var(--font);background:var(--white);transition:border-color .2s}
+.form-group select:focus,.form-group input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(76,175,80,.15)}
+.btn{background:linear-gradient(135deg,var(--green),var(--green-dark));color:var(--white);border:none;padding:12px 28px;border-radius:var(--radius);font-size:1rem;font-weight:600;cursor:pointer;transition:all .2s;font-family:var(--font)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(46,125,50,.35)}
+.btn:active{transform:translateY(0)}
+.result-card{background:var(--cream-dark);border-left:4px solid var(--green);border-radius:var(--radius);padding:16px;margin-top:12px;display:none}
+.result-card.show{display:block}
+.result-card h4{color:var(--green-dark);margin-bottom:6px}
+.result-card p{font-size:.9rem;color:var(--text-light);margin-bottom:3px}
+.result-card .highlight{color:var(--green-dark);font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th{background:var(--green-dark);color:var(--white);padding:10px 12px;text-align:left;font-weight:600}
+td{padding:10px 12px;border-bottom:1px solid #e0e0e0}
+tr:nth-child(even){background:var(--cream)}
+tr:hover{background:var(--cream-dark)}
+.weather-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.weather-day{text-align:center;padding:14px 8px;border-radius:var(--radius);background:var(--cream-dark)}
+.weather-day .day{font-weight:700;font-size:.85rem;color:var(--text-light)}
+.weather-day .temp{font-size:1.3rem;font-weight:700;color:var(--green-dark);margin:4px 0}
+.weather-day .advice{font-size:.75rem;color:var(--text-light)}
+.pest-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #eee}
+.pest-item:last-child{border-bottom:none}
+.pest-icon{font-size:1.8rem;flex-shrink:0;width:40px;text-align:center}
+.pest-info h4{color:var(--green-dark);font-size:.95rem;margin-bottom:3px}
+.pest-info p{font-size:.85rem;color:var(--text-light)}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:600}
+.tag.success{background:#e8f5e9;color:var(--green-dark)}
+.tag.warning{background:#fff3e0;color:#e65100}
+.tag.info{background:#e3f2fd;color:#1565c0}
+.watermark{position:fixed;bottom:16px;right:16px;background:rgba(27,94,32,.9);color:var(--white);padding:8px 16px;border-radius:6px;font-size:.75rem;font-weight:600;z-index:1000;box-shadow:0 2px 12px rgba(0,0,0,.2);backdrop-filter:blur(4px);pointer-events:none}
+footer{background:var(--green-dark);color:var(--white);padding:32px 0 48px;text-align:center;margin-top:20px}
+footer p{margin-bottom:8px;font-size:.9rem;opacity:.9}
+footer .links{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:10px}
+footer .links a{color:var(--white);text-decoration:none;font-size:.85rem;opacity:.8;transition:opacity .2s}
+footer .links a:hover{opacity:1;text-decoration:underline}
+@media(max-width:600px){.grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+.weather-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}
+.hero{padding:40px 0 32px}
+.section{padding:24px 0}
+.card{padding:14px}
+footer .links{gap:12px;flex-direction:column;align-items:center}}
+.tab-bar{display:flex;gap:4px;margin-bottom:20px;overflow-x:auto;padding-bottom:4px}
+.tab-btn{padding:8px 16px;border:none;background:transparent;font-weight:600;font-size:.85rem;color:var(--text-light);cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;font-family:var(--font)}
+.tab-btn.active{color:var(--green-dark);border-bottom-color:var(--green)}
+.tab-btn:hover{color:var(--green)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="container">
+    <h1>Mzansi AgriAI</h1>
+    <p>AI-Powered Advisory Platform for South African Farmers</p>
+  </div>
+</header>
+
+<div class="container">
+
+<div class="tab-bar">
+  <button class="tab-btn active" data-tab="crop">Crop Advisor</button>
+  <button class="tab-btn" data-tab="weather">Weather</button>
+  <button class="tab-btn" data-tab="pest">Pest Detection</button>
+  <button class="tab-btn" data-tab="markets">Market Prices</button>
+</div>
+
+<div id="tab-crop" class="tab-content active">
+  <div class="section">
+    <h2 class="section-title">Crop Advisor</h2>
+    <p style="color:var(--text-light);margin-bottom:16px">Select your province and farm size to get AI-recommended crops.</p>
+    <div class="grid" style="grid-template-columns:1fr 1fr;align-items:end;gap:16px">
+      <div class="form-group">
+        <label for="province">Province</label>
+        <select id="province">
+          <option value="Eastern Cape">Eastern Cape</option>
+          <option value="Free State">Free State</option>
+          <option value="Gauteng">Gauteng</option>
+          <option value="KwaZulu-Natal">KwaZulu-Natal</option>
+          <option value="Limpopo">Limpopo</option>
+          <option value="Mpumalanga">Mpumalanga</option>
+          <option value="North West">North West</option>
+          <option value="Northern Cape">Northern Cape</option>
+          <option value="Western Cape">Western Cape</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="farmSize">Farm Size (hectares)</label>
+        <select id="farmSize">
+          <option value="small">Small (&lt;5 ha)</option>
+          <option value="medium" selected>Medium (5-50 ha)</option>
+          <option value="large">Large (&gt;50 ha)</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn" onclick="getCropAdvice()">Get Crop Recommendation</button>
+    <div id="cropResult" class="result-card"></div>
+  </div>
+</div>
+
+<div id="tab-weather" class="tab-content">
+  <div class="section">
+    <h2 class="section-title">7-Day Weather Advisory</h2>
+    <p style="color:var(--text-light);margin-bottom:16px">Hyper-local forecast for your region with actionable farming advice.</p>
+    <div id="weatherGrid" class="weather-grid"></div>
+  </div>
+</div>
+
+<div id="tab-pest" class="tab-content">
+  <div class="section">
+    <h2 class="section-title">Pest & Disease Detection</h2>
+    <p style="color:var(--text-light);margin-bottom:16px">AI-simulated pest identification based on common SA crop threats.</p>
+    <div id="pestList"></div>
+  </div>
+</div>
+
+<div id="tab-markets" class="tab-content">
+  <div class="section">
+    <h2 class="section-title">Market Prices</h2>
+    <p style="color:var(--text-light);margin-bottom:16px">Current spot prices from major SA produce markets (Johannesburg, Cape Town, Durban).</p>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Crop</th><th>Unit</th><th>Price (ZAR)</th><th>Change</th><th>Market</th></tr></thead>
+        <tbody id="marketTable"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<footer>
+  <div class="container">
+    <p style="font-weight:700;font-size:1rem">Powered by Kirov Dynamics</p>
+    <p style="font-size:.8rem;opacity:.7">Intelligent farming solutions for South Africa</p>
+    <div class="links">
+      <a href="https://portfolio-iota-eight-90.vercel.app" target="_blank" rel="noopener">Portfolio</a>
+      <a href="https://za.linkedin.com/in/koketso-raphasha-517954387" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://github.com/Raphasha27/Mzansi-AgriAI" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<div class="watermark">Kirov Dynamics — Trial Version</div>
+
+<script>
+const provinces = [
+  "Eastern Cape","Free State","Gauteng","KwaZulu-Natal","Limpopo",
+  "Mpumalanga","North West","Northern Cape","Western Cape"
+];
+const cropData = {
+  "Eastern Cape":{small:[{crop:"Maize",yield:"2.1 t/ha",revenue:"R9,450"},{crop:"Sunflower",yield:"1.3 t/ha",revenue:"R7,150"},{crop:"Dry Beans",yield:"1.8 t/ha",revenue:"R11,700"}],medium:[{crop:"Maize",yield:"4.5 t/ha",revenue:"R20,250"},{crop:"Soya Beans",yield:"2.8 t/ha",revenue:"R16,800"},{crop:"Wheat",yield:"3.2 t/ha",revenue:"R14,400"}],large:[{crop:"Maize",yield:"6.8 t/ha",revenue:"R30,600"},{crop:"Soya Beans",yield:"3.5 t/ha",revenue:"R21,000"},{crop:"Citrus",yield:"25 t/ha",revenue:"R87,500"}]},
+  "Free State":{small:[{crop:"Maize",yield:"2.5 t/ha",revenue:"R11,250"},{crop:"Sunflower",yield:"1.5 t/ha",revenue:"R8,250"},{crop:"Sorghum",yield:"2.0 t/ha",revenue:"R8,000"}],medium:[{crop:"Maize",yield:"5.2 t/ha",revenue:"R23,400"},{crop:"Wheat",yield:"3.8 t/ha",revenue:"R17,100"},{crop:"Soya Beans",yield:"3.0 t/ha",revenue:"R18,000"}],large:[{crop:"Maize",yield:"7.5 t/ha",revenue:"R33,750"},{crop:"Wheat",yield:"4.5 t/ha",revenue:"R20,250"},{crop:"Sunflower",yield:"2.8 t/ha",revenue:"R15,400"}]},
+  "Gauteng":{small:[{crop:"Vegetables",yield:"8 t/ha",revenue:"R32,000"},{crop:"Maize",yield:"2.0 t/ha",revenue:"R9,000"},{crop:"Herbs",yield:"3 t/ha",revenue:"R24,000"}],medium:[{crop:"Maize",yield:"4.0 t/ha",revenue:"R18,000"},{crop:"Soya Beans",yield:"2.5 t/ha",revenue:"R15,000"},{crop:"Wheat",yield:"2.8 t/ha",revenue:"R12,600"}],large:[{crop:"Maize",yield:"6.0 t/ha",revenue:"R27,000"},{crop:"Soya Beans",yield:"3.2 t/ha",revenue:"R19,200"},{crop:"Sunflower",yield:"2.5 t/ha",revenue:"R13,750"}]},
+  "KwaZulu-Natal":{small:[{crop:"Sugarcane",yield:"45 t/ha",revenue:"R40,500"},{crop:"Bananas",yield:"12 t/ha",revenue:"R36,000"},{crop:"Vegetables",yield:"9 t/ha",revenue:"R36,000"}],medium:[{crop:"Sugarcane",yield:"60 t/ha",revenue:"R54,000"},{crop:"Maize",yield:"4.8 t/ha",revenue:"R21,600"},{crop:"Citrus",yield:"18 t/ha",revenue:"R63,000"}],large:[{crop:"Sugarcane",yield:"75 t/ha",revenue:"R67,500"},{crop:"Bananas",yield:"20 t/ha",revenue:"R60,000"},{crop:"Avocados",yield:"15 t/ha",revenue:"R75,000"}]},
+  "Limpopo":{small:[{crop:"Tomatoes",yield:"25 t/ha",revenue:"R50,000"},{crop:"Peppers",yield:"12 t/ha",revenue:"R36,000"},{crop:"Maize",yield:"2.2 t/ha",revenue:"R9,900"}],medium:[{crop:"Tomatoes",yield:"40 t/ha",revenue:"R80,000"},{crop:"Citrus",yield:"20 t/ha",revenue:"R70,000"},{crop:"Avocados",yield:"12 t/ha",revenue:"R60,000"}],large:[{crop:"Citrus",yield:"30 t/ha",revenue:"R105,000"},{crop:"Avocados",yield:"18 t/ha",revenue:"R90,000"},{crop:"Macadamias",yield:"4 t/ha",revenue:"R120,000"}]},
+  "Mpumalanga":{small:[{crop:"Maize",yield:"2.8 t/ha",revenue:"R12,600"},{crop:"Vegetables",yield:"7 t/ha",revenue:"R28,000"},{crop:"Dry Beans",yield:"1.5 t/ha",revenue:"R9,750"}],medium:[{crop:"Maize",yield:"5.5 t/ha",revenue:"R24,750"},{crop:"Soya Beans",yield:"3.2 t/ha",revenue:"R19,200"},{crop:"Sugarcane",yield:"55 t/ha",revenue:"R49,500"}],large:[{crop:"Sugarcane",yield:"70 t/ha",revenue:"R63,000"},{crop:"Citrus",yield:"25 t/ha",revenue:"R87,500"},{crop:"Macadamias",yield:"3.5 t/ha",revenue:"R105,000"}]},
+  "North West":{small:[{crop:"Maize",yield:"2.3 t/ha",revenue:"R10,350"},{crop:"Sunflower",yield:"1.4 t/ha",revenue:"R7,700"},{crop:"Sorghum",yield:"1.8 t/ha",revenue:"R7,200"}],medium:[{crop:"Maize",yield:"4.8 t/ha",revenue:"R21,600"},{crop:"Sunflower",yield:"2.2 t/ha",revenue:"R12,100"},{crop:"Groundnuts",yield:"2.0 t/ha",revenue:"R14,000"}],large:[{crop:"Maize",yield:"6.5 t/ha",revenue:"R29,250"},{crop:"Sunflower",yield:"3.0 t/ha",revenue:"R16,500"},{crop:"Groundnuts",yield:"3.5 t/ha",revenue:"R24,500"}]},
+  "Northern Cape":{small:[{crop:"Wheat",yield:"2.0 t/ha",revenue:"R9,000"},{crop:"Grapes",yield:"8 t/ha",revenue:"R32,000"},{crop:"Lucerne",yield:"6 t/ha",revenue:"R13,200"}],medium:[{crop:"Wheat",yield:"3.5 t/ha",revenue:"R15,750"},{crop:"Grapes",yield:"15 t/ha",revenue:"R60,000"},{crop:"Maize",yield:"4.0 t/ha",revenue:"R18,000"}],large:[{crop:"Grapes",yield:"22 t/ha",revenue:"R88,000"},{crop:"Wheat",yield:"5.0 t/ha",revenue:"R22,500"},{crop:"Cotton",yield:"3.5 t/ha",revenue:"R24,500"}]},
+  "Western Cape":{small:[{crop:"Wheat",yield:"2.5 t/ha",revenue:"R11,250"},{crop:"Grapes",yield:"10 t/ha",revenue:"R40,000"},{crop:"Olives",yield:"3 t/ha",revenue:"R24,000"}],medium:[{crop:"Wheat",yield:"4.2 t/ha",revenue:"R18,900"},{crop:"Grapes",yield:"18 t/ha",revenue:"R72,000"},{crop:"Apples",yield:"25 t/ha",revenue:"R62,500"}],large:[{crop:"Grapes",yield:"28 t/ha",revenue:"R112,000"},{crop:"Apples",yield:"40 t/ha",revenue:"R100,000"},{crop:"Citrus",yield:"30 t/ha",revenue:"R105,000"}]}
+};
+const weatherData = [
+  {day:"Mon",temp:"28°C",cond:"Sunny",advice:"Irrate crops early morning; excellent drying conditions."},
+  {day:"Tue",temp:"31°C",cond:"Hot",advice:"High temps — increase irrigation frequency. Monitor for heat stress."},
+  {day:"Wed",temp:"29°C",cond:"Partly Cloudy",advice:"Good day for foliar feeding. Moderate evaporation rates."},
+  {day:"Thu",temp:"26°C",cond:"Thunderstorms",advice:"Expected rainfall 15-25mm. Postpone chemical spraying."},
+  {day:"Fri",temp:"24°C",cond:"Rain",advice:"Ideal for planting if soil temp > 18°C. Check drainage."},
+  {day:"Sat",temp:"27°C",cond:"Cloudy",advice:"Humidity high — monitor for fungal diseases in dense crops."},
+  {day:"Sun",temp:"30°C",cond:"Sunny",advice:"Perfect harvesting weather. Dry conditions for grain storage."}
+];
+const pestData = [
+  {icon:"🦗",name:"African Armyworm",crop:"Maize & Sorghum",risk:"High",treatment:"Apply lambda-cyhalothrin or emamectin benzoate. Scout weekly."},
+  {icon:"🐛",name:"Fall Armyworm",crop:"Maize",risk:"Critical",treatment:"Use Bt maize varieties or spinetoram. Report to DAFF."},
+  {icon:"🪰",name:"Fruit Fly",crop:"Citrus & Mangoes",risk:"Medium",treatment:"Set pheromone traps. Apply protein bait sprays."},
+  {icon:"🐞",name:"Aphids",crop:"Vegetables & Soya",risk:"Medium",treatment:"Introduce ladybirds. Imidacloprid if infestation severe."},
+  {icon:"🕷️",name:"Red Spider Mite",crop:"Tomatoes & Maize",risk:"Low",treatment:"Predatory mites (Phytoseiulus). Avoid broad-spectrum pesticides."},
+  {icon:"🦟",name:"Maize Stalk Borer",crop:"Maize",risk:"High",treatment:"Crop rotation. Apply chlorantraniliprole at early whorl stage."}
+];
+const marketData = [
+  {crop:"White Maize",unit:"ton",price:"R4,250",change:"+2.3%",market:"Joburg Fresh Produce"},
+  {crop:"Yellow Maize",unit:"ton",price:"R4,180",change:"+1.8%",market:"Joburg Fresh Produce"},
+  {crop:"Sunflower Seed",unit:"ton",price:"R8,450",change:"-0.5%",market:"Cape Town Market"},
+  {crop:"Soya Beans",unit:"ton",price:"R9,600",change:"+3.1%",market:"Durban Fresh Produce"},
+  {crop:"Wheat",unit:"ton",price:"R6,200",change:"+1.2%",market:"Cape Town Market"},
+  {crop:"Citrus (Oranges)",unit:"15kg crate",price:"R185",change:"+5.0%",market:"Joburg Fresh Produce"},
+  {crop:"Avocados",unit:"4kg carton",price:"R95",change:"-1.8%",market:"Durban Fresh Produce"},
+  {crop:"Sugarcane",unit:"ton",price:"R2,800",change:"+0.7%",market:"Durban Sugar Terminal"},
+  {crop:"Macadamias",unit:"kg",price:"R85",change:"+4.2%",market:"Joburg Fresh Produce"},
+  {crop:"Apples (Grade 1)",unit:"12.5kg box",price:"R145",change:"+2.0%",market:"Cape Town Market"},
+  {crop:"Tomatoes",unit:"10kg crate",price:"R72",change:"-3.5%",market:"Joburg Fresh Produce"},
+  {crop:"Grapes",unit:"4.5kg carton",price:"R62",change:"+1.5%",market:"Cape Town Market"}
+];
+function getCropAdvice(){const p=document.getElementById("province").value;const s=document.getElementById("farmSize").value;const data=cropData[p][s];const r=document.getElementById("cropResult");let h=`<h4>Recommended Crops for ${p} (${s==='small'?'<5 ha':s==='medium'?'5-50 ha':'>50 ha'})</h4>`;data.forEach(c=>{h+=`<p>🌱 <strong>${c.crop}</strong> — Yield: <span class="highlight">${c.yield}</span> | Est. Revenue: <span class="highlight">${c.revenue}</span>/ha</p>`});h+=`<p style="margin-top:8px;font-size:.8rem;color:var(--text-light)">⚡ AI confidence: ${(85+Math.floor(Math.random()*12))}% &middot; Based on historical SADA data & soil maps</p>`;r.innerHTML=h;r.classList.add("show")}
+function renderWeather(){const g=document.getElementById("weatherGrid");g.innerHTML=weatherData.map(d=>`<div class="weather-day"><div class="day">${d.day}</div><div style="font-size:1.5rem;margin:2px 0">${d.cond==="Sunny"?"☀️":d.cond==="Hot"?"🔥":d.cond==="Partly Cloudy"?"⛅":d.cond==="Thunderstorms"?"⛈️":d.cond==="Rain"?"🌧️":"☁️"}</div><div class="temp">${d.temp}</div><div class="advice">${d.advice}</div></div>`).join("")}
+function renderPest(){const g=document.getElementById("pestList");g.innerHTML=pestData.map(p=>`<div class="pest-item"><div class="pest-icon">${p.icon}</div><div class="pest-info"><h4>${p.name} <span class="tag ${p.risk==='Critical'?'warning':p.risk==='High'?'warning':p.risk==='Medium'?'info':'success'}">${p.risk}</span></h4><p><strong>Target:</strong> ${p.crop}</p><p>💊 ${p.treatment}</p></div></div>`).join("")}
+function renderMarket(){const g=document.getElementById("marketTable");g.innerHTML=marketData.map(m=>`<tr><td><strong>${m.crop}</strong></td><td>${m.unit}</td><td><strong>${m.price}</strong></td><td><span style="color:${m.change.startsWith('+')?'var(--green)':'#c62828'};font-weight:600">${m.change}</span></td><td>${m.market}</td></tr>`).join("")}
+document.querySelectorAll(".tab-btn").forEach(btn=>{btn.addEventListener("click",function(){document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));this.classList.add("active");document.getElementById("tab-"+this.dataset.tab).classList.add("active")})});
+renderWeather();renderPest();renderMarket();
+</script>
+</body>
+</html>

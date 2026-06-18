@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mzansi AgriAI</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--green-dark:#1a4d2e;--green-mid:#2d6a3f;--green-light:#4caf50;--earth:#6d4c27;--cream:#f5f0e8;--bg:#fafaf7;--text:#1a1a1a;--muted:#666;--card-shadow:0 2px 12px rgba(0,0,0,.08)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+.header{background:linear-gradient(135deg,var(--green-dark),var(--green-mid));color:#fff;padding:1rem 1.25rem;text-align:center;position:relative}
+.header h1{font-size:1.5rem;font-weight:700}
+.header p{font-size:.85rem;opacity:.9;margin-top:.2rem}
+.trial-badge{position:fixed;bottom:0;left:0;right:0;background:rgba(26,77,46,.92);color:#fff;text-align:center;padding:.35rem;font-size:.7rem;letter-spacing:.5px;z-index:999;backdrop-filter:blur(4px)}.trial-badge a{color:#8bc34a;text-decoration:none}
+.container{max-width:960px;margin:0 auto;padding:1rem 1rem 4rem}
+.card{background:#fff;border-radius:12px;box-shadow:var(--card-shadow);padding:1.25rem;margin-bottom:1rem}
+.card h2{font-size:1.1rem;color:var(--green-dark);margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
+.card h2 .icon{font-size:1.3rem}
+.grid-2{display:grid;grid-template-columns:1fr;gap:.75rem}
+.stat{display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid #eee;font-size:.9rem}
+.stat:last-child{border-bottom:none}
+.stat-label{color:var(--muted)}.stat-value{font-weight:600;color:var(--green-dark)}
+.form-group{margin-bottom:.75rem}
+.form-group label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:.25rem;font-weight:500}
+.form-group input,.form-group select{width:100%;padding:.6rem .75rem;border:1px solid #ddd;border-radius:8px;font-size:.9rem;background:var(--cream)}
+.btn{background:var(--green-mid);color:#fff;border:none;padding:.65rem 1.25rem;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;transition:background .2s;width:100%}.btn:hover{background:var(--green-dark)}
+.result-box{background:var(--cream);border-radius:8px;padding:.85rem;margin-top:.75rem;font-size:.85rem;white-space:pre-wrap;overflow-x:auto;max-height:300px;overflow-y:auto;font-family:'Courier New',monospace}
+.status-ok{color:var(--green-light);font-weight:700}
+.prices-table{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:.5rem}
+.prices-table th{text-align:left;padding:.5rem;background:var(--cream);font-weight:600}
+.prices-table td{padding:.5rem;border-bottom:1px solid #eee}
+.trend-up{color:var(--green-light)}.trend-down{color:#c62828}.trend-stable{color:var(--earth)}
+footer{text-align:center;padding:1rem;font-size:.8rem;color:var(--muted)}
+footer a{color:var(--green-mid);text-decoration:none}
+@media(min-width:600px){.grid-2,.features{grid-template-columns:1fr 1fr;display:grid;gap:.75rem}}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Mzansi AgriAI</h1>
+  <p>AI Advisory for South African Farmers</p>
+</div>
+<div class="container">
+
+<div class="card" id="health-card">
+  <h2><span class="icon">&#10003;</span> System Health</h2>
+  <div id="health-results"><p>Checking...</p></div>
+</div>
+
+<div class="card">
+  <h2><span class="icon">&#127758;</span> Provinces</h2>
+  <div id="provinces-results"><p>Loading...</p></div>
+</div>
+
+<div class="card">
+  <h2><span class="icon">&#127793;</span> Crop Advisor</h2>
+  <div class="form-group">
+    <label for="cp-province">Province</label>
+    <select id="cp-province"></select>
+  </div>
+  <div class="form-group">
+    <label for="cp-size">Farm Size (hectares)</label>
+    <input type="number" id="cp-size" value="5" min="0.1" step="0.1">
+  </div>
+  <button class="btn" onclick="getCropPlan()">Get Crop Plan</button>
+  <div id="crop-plan-result" class="result-box" style="display:none"></div>
+</div>
+
+<div class="card">
+  <h2><span class="icon">&#9926;</span> Weather Advisory</h2>
+  <div class="form-group">
+    <label for="w-province">Province</label>
+    <select id="w-province"></select>
+  </div>
+  <button class="btn" onclick="getWeather()">Get Weather Advisory</button>
+  <div id="weather-result" class="result-box" style="display:none"></div>
+</div>
+
+<div class="card">
+  <h2><span class="icon">&#128027;</span> Pest Detection</h2>
+  <div class="form-group">
+    <label for="pest-crop">Crop</label>
+    <input type="text" id="pest-crop" value="maize">
+  </div>
+  <div class="form-group">
+    <label for="pest-symptoms">Symptoms</label>
+    <input type="text" id="pest-symptoms" value="yellowing leaves, holes">
+  </div>
+  <button class="btn" onclick="detectPest()">Detect Pest</button>
+  <div id="pest-result" class="result-box" style="display:none"></div>
+</div>
+
+<div class="card">
+  <h2><span class="icon">&#128176;</span> Market Prices</h2>
+  <div class="form-group">
+    <label for="mp-crop">Crop (optional)</label>
+    <input type="text" id="mp-crop" placeholder="e.g. maize">
+  </div>
+  <button class="btn" onclick="getMarketPrices()">Get Prices</button>
+  <div id="prices-result"></div>
+</div>
+
+<footer>
+  <p>Powered by <a href="https://portfolio-iota-eight-90.vercel.app" target="_blank">Kirov Dynamics</a></p>
+  <p><a href="https://za.linkedin.com/in/koketso-raphasha-517954387" target="_blank">LinkedIn</a> &bull; <a href="https://portfolio-iota-eight-90.vercel.app" target="_blank">Portfolio</a></p>
+</footer>
+</div>
+<div class="trial-badge">KIROV DYNAMICS &mdash; TRIAL &bull; <a href="https://portfolio-iota-eight-90.vercel.app" target="_blank">Portfolio</a> &bull; <a href="https://za.linkedin.com/in/koketso-raphasha-517954387" target="_blank">LinkedIn</a></div>
+
+<script>
+const API = '/api/v1';
+
+async function apiGet(path) {
+  const r = await fetch(API + path);
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+async function apiPost(path, body) {
+  const r = await fetch(API + path, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(body),
+  });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+function populateProvinceSelects() {
+  apiGet('/provinces').then(d => {
+    const opts = d.provinces.map(p => `<option value="${p}">${p.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}</option>`).join('');
+    document.getElementById('cp-province').innerHTML = opts;
+    document.getElementById('w-province').innerHTML = opts;
+  });
+}
+
+async function loadHealth() {
+  try {
+    const d = await apiGet('/health');
+    document.getElementById('health-results').innerHTML = `
+      <div class="stat"><span class="stat-label">Status</span><span class="stat-value status-ok">${d.status}</span></div>
+      <div class="stat"><span class="stat-label">System</span><span class="stat-value">${d.system}</span></div>
+      <div class="stat"><span class="stat-label">Provinces</span><span class="stat-value">${d.provinces}</span></div>`;
+  } catch(e) {
+    document.getElementById('health-results').innerHTML = `<p style="color:#c62828">Error: ${e.message}</p>`;
+  }
+}
+
+async function loadProvinces() {
+  try {
+    const d = await apiGet('/provinces');
+    document.getElementById('provinces-results').innerHTML = d.provinces.map(p =>
+      `<div class="stat"><span class="stat-value" style="text-transform:capitalize">${p.replace(/-/g,' ')}</span></div>`
+    ).join('');
+  } catch(e) {
+    document.getElementById('provinces-results').innerHTML = `<p style="color:#c62828">Error: ${e.message}</p>`;
+  }
+}
+
+async function getCropPlan() {
+  const province = document.getElementById('cp-province').value;
+  const farm_size = document.getElementById('cp-size').value;
+  const el = document.getElementById('crop-plan-result');
+  el.style.display = 'block';
+  el.textContent = 'Loading...';
+  try {
+    const d = await apiGet(`/advisory/crop-plan?province=${province}&farm_size=${farm_size}`);
+    el.textContent = JSON.stringify(d, null, 2);
+  } catch(e) {
+    el.textContent = `Error: ${e.message}`;
+  }
+}
+
+async function getWeather() {
+  const province = document.getElementById('w-province').value;
+  const el = document.getElementById('weather-result');
+  el.style.display = 'block';
+  el.textContent = 'Loading...';
+  try {
+    const d = await apiGet(`/advisory/weather?province=${province}&days=7`);
+    el.textContent = JSON.stringify(d, null, 2);
+  } catch(e) {
+    el.textContent = `Error: ${e.message}`;
+  }
+}
+
+async function detectPest() {
+  const crop = document.getElementById('pest-crop').value;
+  const symptoms = document.getElementById('pest-symptoms').value;
+  const el = document.getElementById('pest-result');
+  el.style.display = 'block';
+  el.textContent = 'Loading...';
+  try {
+    const d = await apiPost('/pest/detect', {crop, symptoms});
+    el.textContent = JSON.stringify(d, null, 2);
+  } catch(e) {
+    el.textContent = `Error: ${e.message}`;
+  }
+}
+
+async function getMarketPrices() {
+  const crop = document.getElementById('mp-crop').value;
+  const el = document.getElementById('prices-result');
+  el.textContent = 'Loading...';
+  try {
+    const q = crop ? `?crop=${crop}` : '';
+    const d = await apiGet(`/market-prices${q}`);
+    let rows = d.prices.map(p => `<tr>
+      <td style="text-transform:capitalize">${p.crop}</td>
+      <td>R${p.price_per_ton.toLocaleString()}/ton</td>
+      <td>${p.market}</td>
+      <td class="trend-${p.trend}">${p.trend}</td>
+    </tr>`).join('');
+    el.innerHTML = `<table class="prices-table"><thead><tr><th>Crop</th><th>Price</th><th>Market</th><th>Trend</th></tr></thead><tbody>${rows}</tbody></table>
+      <p style="font-size:.75rem;color:var(--muted);margin-top:.5rem">Updated: ${d.updated_at}</p>`;
+  } catch(e) {
+    el.innerHTML = `<p style="color:#c62828">Error: ${e.message}</p>`;
+  }
+}
+
+populateProvinceSelects();
+loadHealth();
+loadProvinces();
+getMarketPrices();
+</script>
+</body>
+</html>
