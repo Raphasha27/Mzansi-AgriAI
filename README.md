@@ -23,8 +23,9 @@ Precision agriculture platform delivering crop yield prediction, pest detection,
 
 - **Crop Yield Prediction** — ML models trained on SA climate and soil data
 - **Pest & Disease Detection** — Computer vision for early warning
-- **Irrigation Optimization** — Water usage recommendations based on weather
-- **Market Intelligence** — Real-time commodity pricing and demand forecasting
+- **Smart Irrigation Sync** — Water usage recommendations dynamically synced with Eskom Load Shedding schedules to prevent pump damage and water waste
+- **Market Intelligence** — Real-time commodity pricing and demand forecasting (Premium Tier)
+- **WhatsApp Automation** — Pre-built bot templates for South African customer service channels
 - **Multi-language** — Supports English, Zulu, Xhosa, and Afrikaans
 
 ## Quick Start
@@ -47,12 +48,16 @@ python run.py
 | [YouthCode-ZA](https://github.com/Raphasha27/YouthCode-ZA) | Coding education for SA youth |
 | [Townships-Market-AI](https://github.com/Raphasha27/Townships-Market-AI) | Marketplace intelligence for township economies |
 
-## Product Ladder
+## Interactive Demo & Monetization
+
+Experience the live interactive demo featuring our localized monetization strategy:
+- **ZAR Pricing Modal:** Showcases the conversion path from Basic (Free) to Pro Farmer (R199/mo).
+- **Feature Gates:** Premium features like Live Market Prices and Smart Irrigation are gated to drive upgrades.
 
 ```
 GitHub (this repo)
     ↓
-Live Demo → https://github.com/Raphasha27/Mzansi-AgriAI
+Live Interactive Demo → https://mzansi-agriai-demo.vercel.app
     ↓
 Contact → https://github.com/Raphasha27
 ```
