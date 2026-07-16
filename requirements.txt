@@ -1,5 +1,5 @@
 aiofiles==24.1.0
-fastapi==0.138.0
+fastapi==0.139.1
 uvicorn[standard]==0.30.0
 pydantic==2.13.4
 numpy==1.26.0
