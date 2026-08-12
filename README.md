@@ -1,3 +1,6 @@
+
+> **Live Now:** [https://mzansi-agriai.vercel.app](https://mzansi-agriai.vercel.app)
+> Run it instantly — no setup needed. Free-tier hosted build by Kirov Dynamics.
 <div align="center">
   <a href="https://raphasha27.github.io/Mzansi-AgriAI/">
     <img src="https://img.shields.io/badge/LIVE_DEPLOYMENT-View_App-0EA5E9?style=for-the-badge&logo=github&logoColor=white" alt="Live Deployment" />
@@ -79,3 +82,4 @@ MIT — see [LICENSE](LICENSE)
 This project is developed and maintained together with the team:
 - [Raphasha27](https://github.com/Raphasha27) — Project lead & maintainer
 - [DkMash](https://github.com/DkMash) — Teammate
+
