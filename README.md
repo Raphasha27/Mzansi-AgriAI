@@ -83,3 +83,8 @@ This project is developed and maintained together with the team:
 - [Raphasha27](https://github.com/Raphasha27) — Project lead & maintainer
 - [DkMash](https://github.com/DkMash) — Teammate
 
+
+
+## Usage Instructions
+Framework detected: Python
+Open the HTML files directly in your browser or run a simple local web server (e.g. `npx serve` or `python -m http.server`).
