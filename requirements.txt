@@ -4,7 +4,7 @@ uvicorn[standard]==0.52.3
 pydantic==2.13.4
 numpy==2.5.2
 scikit-learn==1.9.0
-python-dotenv==1.2.2
+python-dotenv==1.2.3
 loguru==0.7.3
 pendulum==3.2.0
 httpx==0.28.1
