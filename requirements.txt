@@ -2,8 +2,8 @@ aiofiles==25.1.0
 fastapi==0.141.1
 uvicorn[standard]==0.52.4
 pydantic==2.13.5
-numpy==2.5.2
-scikit-learn==1.9.0
+numpy==2.5.3
+scikit-learn==1.9.1
 python-dotenv==1.2.3
 loguru==0.7.3
 pendulum==3.2.0
